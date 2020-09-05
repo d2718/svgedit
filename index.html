@@ -1,0 +1,160 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>SVG Editor</title>
+    <style>
+body {
+    background-color: gray;
+    margin: 1em;
+}
+
+div.row { display: flex; }
+div.column { display: flex; flex-direction: column; }
+div.center { align-items: center; }
+
+svg { background-color: white; }
+svg#the_image { width: 300px; height: 150px; }
+svg#shadow_image { display: none; }
+svg > *.hidden { display: none; }
+
+ul { list-style-type: none; }
+ul > li {
+    background-color: white;
+    padding: 1ex;
+    cursor: pointer;
+}
+ul > li.highlighted { background-color: lightgray; }
+
+li svg {
+    border: 1px dotted black;
+    margin-right: 1ex;
+}
+
+input[type="color"] { margin: 0 1ex; }
+label.row_leader {
+    width: 7ex;
+    text-align: right;
+}
+input[type="checkbox"] { width: 2ex; height: 2ex; }
+div#strokeline input { width: 4ex; }
+div#strokeline label { margin: 0 1ex; }
+
+div#butt_row > button { margin: 1ex 1ex 1ex 0; }
+    </style>
+</head>
+<body>
+
+<div class="row">
+    <div class="column">
+        <svg id="the_image" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="butt_row" class="row">
+            <button id="add_line"><label for="add_line">line</label></button>
+            <button id="add_rect"><label for="add_rect">rect</label></button>
+            <button id="add_ellipse"><label for="add_ellipse">ellipse</label></button>
+        </div>
+    </div>
+    <div class="column">
+        <div class="row center">
+            <label for="stroke_color" class="row_leader">stroke</label>
+            <input type="color" id="stroke_color">
+            <input type="checkbox" id="stroke_none">
+            <label for="stroke_none">none</label>
+        </div>
+        <input type="range" id="stroke_slider">
+        <div class="row center" id="strokeline">
+            <label for="stroke_current">current</label>
+            <input type="text" id="stroke_current" value="1">
+            <label for="stroke_max">max</label>
+            <input type="text" id="stroke_max">
+        </div>
+        <div class="row center">
+            <label for="fill_color" class="row_leader">fill</label>
+            <input type="color" id="fill_color">
+            <input type="checkbox" id="fill_none">
+            <label for="fill_none">none</label>
+        </div>
+    </div>
+    <ul id="elements"></ul>
+</div>
+
+<div style="white-space: pre; font-family: monospace;">
+Hereafter follows some garbage
+Yea, to make the screen scrollable
+
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+n
+o
+p
+q
+r
+s
+t
+u
+v
+w
+x
+y
+z
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+-
+=
+!
+@
+#
+$
+%
+^
+&amp;
+(
+)
+[
+]
+{
+}
+|
+\
+&gt;
+&lt;
+;
+'
+/
+?
+`
+~
+
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" id="shadow_image">
+    <ellipse cx="200" cy="100" rx="80" ry="30"
+        stroke="#448888" stroke-width="4" fill="#888822" />
+    <line x1="5" y1="5" x2="220" y2="140"
+        stroke="blue" stroke-width="5" />
+    <rect x="25" y="25" height="40" width="100"
+        stroke="red" stroke-width="3" fill="none"/>
+</svg>
+
+<script src="svgedit.js"></script>
+
+</body>
+</html>

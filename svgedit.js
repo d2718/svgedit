@@ -1,4 +1,15 @@
+/* svgedit.js
+ * 
+ * Script for an in-browser SVG editor.
+ * 
+ * Begun: sometime in August, 2020
+ * Last update: 2020-09-05
+ */
 
+/* I hesitate to really call these "configuration" values, because the point
+ * isn't for them to be user-configurable. They're more like tweakables
+ * for the developer.
+ */
 const CFG = {
     // max width of element preview image (in pixels)
     "prev_w": 50,
@@ -61,8 +72,22 @@ const STROKE = {
     "max": document.getElementById("stroke_max"),
 }
 
+/* This is de-mode-ify, not demo-deify. A "mode" is any state where elements
+ * react differently than normal to events, like when a user has clicked on
+ * one of the <li>s in the element list, or is inserting a new element.
+ * 
+ * This function is for cancellation of that mode; that is, it should put
+ * all elements back into their default-mode state.
+ */
 var demodeify = null;
+
+/* Points to the admin object for the currently-selected element. */
 var active = null;
+
+/* In a mode where "mousemove" is being event-listened, this is the function
+ * responding to that event. It is stored in a global variable to make it
+ * easier to remove upon demodeification.
+ */
 var edit_func = null;
 
 const RGB_RE = /rgb\((\d+),\s*(\d+),\s*(\d+)/
@@ -113,6 +138,7 @@ DIRECT_ATTRIBS = {
     "rect": ["stroke", "fill"],
     "ellipse": ["stroke", "fill"],
 };
+
 
 var ADMIN_OBJS = [];
 var ADMIN_MAP = {};

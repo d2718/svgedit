@@ -517,7 +517,8 @@ function click_on_li(evt) {
     update_highlight(aobj);
     for (let ee_name of ["highlight_rect_solid", "highlight_rect_dash",
                          "resize_nw", "resize_n", "resize_w",
-                         "resize_e", "resize_s", "resize_se"]) {
+                         "resize_e", "resize_s", "resize_se",
+                         "move_handle"]) {
         EDITING_ELTS[ee_name].style.display = "inline";
     }
     

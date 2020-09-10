@@ -17,13 +17,15 @@ svg#the_image { width: 300px; height: 150px; }
 svg#shadow_image { display: none; }
 svg > *.hidden { display: none; }
 
-ul { list-style-type: none; }
-ul > li {
+ul#elements {
+    list-style-type: none;
+}
+ul#elements > li {
     background-color: white;
     padding: 1ex;
     cursor: pointer;
 }
-ul > li.highlighted { background-color: lightgray; }
+ul#elements > li.highlighted { background-color: lightgray; }
 
 li svg {
     border: 1px dotted black;
@@ -36,6 +38,9 @@ label.row_leader {
     text-align: right;
 }
 input[type="checkbox"] { width: 2ex; height: 2ex; }
+
+div.spaced > * { margin-left: 1ex; }
+
 div#strokeline input { width: 4ex; }
 div#strokeline label { margin: 0 1ex; }
 
@@ -81,6 +86,12 @@ div#butt_row > button { margin: 1ex 1ex 1ex 0; }
             <input type="color" id="fill_color">
             <input type="checkbox" id="fill_none">
             <label for="fill_none">none</label>
+        </div>
+        <div class="row spaced">
+            <button id="z_up">&#x2b9d;</button><label for="z_up">element up</label>
+        </div>
+        <div class="row spaced">
+            <button id="z_down">&#x2b9f;</button><label for="z_down">element down</label>
         </div>
     </div>
     <ul id="elements"></ul>

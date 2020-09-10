@@ -70,7 +70,11 @@ const STROKE = {
     "slider": document.getElementById("stroke_slider"),
     "current": document.getElementById("stroke_current"),
     "max": document.getElementById("stroke_max"),
-}
+};
+const ZSHIFT = {
+    "up": document.getElementById("z_up"),
+    "down": document.getElementById("z_down"),
+};
 
 /* This is de-mode-ify, not demo-deify. A "mode" is any state where elements
  * react differently than normal to events, like when a user has clicked on
@@ -90,8 +94,14 @@ var active = null;
  */
 var edit_func = null;
 
+/* The object returned by window.getComputedStyle() expresses colors in the
+ * format rgb(ddd, ddd, ddd); this extracts the decimal numbers for
+ * conversion to #xxxxxx format.
+ */
 const RGB_RE = /rgb\((\d+),\s*(\d+),\s*(\d+)/
 
+/* Converts colors from "rgb(ddd, ddd, ddd)" format to "#xxxxxx" format.
+ */
 function rgb_to_hex(col_str) {
     let m = RGB_RE.exec(col_str);
     if (m.length < 4) {
@@ -166,11 +176,11 @@ function gen_admin_object(elt) {
 }
 
 function update_preview(aobj) {
-    let s = window.getComputedStyle(IMAGE, null);
-    console.log(`image dims: ${s.getPropertyValue("width")}, ${s.getPropertyValue("height")}`);
-    let bigw = parseFloat(s.getPropertyValue("width"));
-    let bigh = parseFloat(s.getPropertyValue("height"));
-    
+    let ir = IMAGE.getBoundingClientRect();
+    let bigw = ir.width;
+    let bigh = ir.height;
+    console.log(`image dims: $bigw}, ${bigh}`);
+
     let big_aspect = bigw / bigh;
     let scale_factor = null
     if (big_aspect < CFG.prev_aspect) {
@@ -338,6 +348,34 @@ function update_stroke(evt) {
     update_preview(aobj);
 }
 
+function change_z_order(evt) {
+    if (ADMIN_OBJS.length < 2) return;
+    let n = ADMIN_OBJS.indexOf(active);
+    if (n == -1) return;
+    
+    /* The "up" and "down" cases seem reversed here, because the items
+     * in ADMIN_OBJS are drawn in order, and the element drawn first
+     * ends up on the bottom; the element drawn last ends up on top. */
+    switch (this) {
+    case ZSHIFT.down:
+        if (n == 0) return;
+        ADMIN_OBJS.splice(n, 1);
+        ADMIN_OBJS.splice(n-1, 0, active);
+        break;
+    case ZSHIFT.up:
+        if (n == ADMIN_OBJS.length-1) return;
+        ADMIN_OBJS.splice(n, 1);
+        ADMIN_OBJS.splice(n+1, 0, active);
+        break;
+    default:
+        console.log("change_z_order(): unrecogniced this case:");
+        console.log(this);
+    }
+    
+    redraw_list();
+    redraw_image();
+}
+
 function start_resizing_elt(evt) {
     mode_str = null;
     // This is a somewhat hacky way to determine which resize handle is
@@ -412,9 +450,9 @@ function stop_moving_elt(evt) {
 }
 
 function update_resize_handle() {
-    let dims = get_elt_size(IMAGE);
-    let x = dims.w - CFG.resize_size;
-    let y = dims.h - CFG.resize_size;
+    //let dims = get_elt_size(IMAGE);
+    let x = IMAGE.clientWidth - CFG.resize_size;
+    let y = IMAGE.clientHeight - CFG.resize_size;
     EDITING_ELTS.resize_handle.setAttribute("x", x);
     EDITING_ELTS.resize_handle.setAttribute("y", y);
 }
@@ -452,7 +490,12 @@ function redraw_image() {
 
 function redraw_list() {
     ELT_LIST.innerHTML = "";
-    for (let ao of ADMIN_OBJS) {
+    if (ADMIN_OBJS.length == 0) return;
+    
+    /* Traverse the list backward so the topmost item in the list goes with
+     * the topmost element in the image. */
+    for (let n = ADMIN_OBJS.length - 1; n >= 0; n--) {
+        let ao = ADMIN_OBJS[n];
         ELT_LIST.appendChild(ao.li);
         ao.li.addEventListener("click", click_on_li);
     }
@@ -540,7 +583,7 @@ function click_on_li(evt) {
 
 
 
-// Script "starts" for real here.
+
 
 // Build actual image from hidden shadow image
 for (let elt of document.getElementById("shadow_image").children) {
@@ -548,7 +591,7 @@ for (let elt of document.getElementById("shadow_image").children) {
     ADMIN_OBJS.push(aobj);
 }
 
-// Set state of editing elements.
+// Set initial state of editing elements.
 
 EDITING_ELTS.resize_handle.setAttributeNS(null, "stroke", CFG.resize_stroke);
 EDITING_ELTS.resize_handle.setAttributeNS(null, "fill", CFG.resize_fill);
@@ -603,6 +646,9 @@ STROKE.max.value = CFG.default_stroke_max;
 STROKE.slider.addEventListener("input", update_stroke);
 STROKE.current.addEventListener("change", update_stroke);
 STROKE.max.addEventListener("change", update_stroke);
+
+ZSHIFT.up.addEventListener("click", change_z_order);
+ZSHIFT.down.addEventListener("click", change_z_order);
 
 redraw_image();
 update_resize_handle();
